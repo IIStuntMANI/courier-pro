@@ -376,6 +376,18 @@ body:not(:has(#home:not(.hide))) > main {
   overflow-y:auto!important;
   touch-action:pan-y!important;
 }
+
+/* Final home scroll lock: override all earlier scrolling rules. */
+html:has(#home:not(.hide)),body:has(#home:not(.hide)){
+  overflow:hidden!important;overscroll-behavior:none!important;
+  height:100%!important;max-height:100%!important;
+}
+body:has(#home:not(.hide)) > main{
+  overflow:hidden!important;overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+}
+body:has(#home:not(.hide)) #home{touch-action:none!important;}
 </style></head><body class="entry-locked"><div id="entryScreen" role="dialog" aria-modal="true" aria-label="Вход в Курьер PRO"><div class="entry-mark" aria-hidden="true">➤</div><div class="entry-name">КУРЬЕР <em>PRO</em></div><div class="entry-subtitle">ДОСТАВКА · СМЕНЫ · ДОХОД</div><button id="enterApp" type="button">Войти в приложение</button></div><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
@@ -518,6 +530,28 @@ clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkAct
     }
   }
   function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(fitHome)}
+  // iOS standalone PWA may rubber-band even when overflow is hidden.
+  // Cancel gestures only on the home content, never on other tabs.
+  function homeIsActive(){return !home.classList.contains('hide')}
+  main.addEventListener('touchmove',event=>{
+    if(homeIsActive() && event.cancelable)event.preventDefault();
+  },{passive:false});
+  main.addEventListener('wheel',event=>{
+    if(homeIsActive() && event.cancelable)event.preventDefault();
+  },{passive:false});
+  document.addEventListener('touchmove',event=>{
+    if(homeIsActive() && !document.body.classList.contains('entry-locked') && event.cancelable){
+      event.preventDefault();
+    }
+  },{passive:false});
+  function resetHomeScroll(){
+    if(!homeIsActive())return;
+    main.scrollTop=0;
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+  }
+  main.addEventListener('scroll',resetHomeScroll,{passive:true});
+
   new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:['class']});
   window.addEventListener('resize',schedule);
   window.addEventListener('orientationchange',schedule);

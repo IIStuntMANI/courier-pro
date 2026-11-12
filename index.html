@@ -139,6 +139,27 @@ main{max-width:480px;padding:13px 15px 0;margin:auto}
 .next-payment-reminders-note{display:flex;gap:7px;align-items:flex-start;margin-top:10px;font-size:10px;line-height:1.5;color:#a99d98}
 .next-payment-reminders-note span:first-child{color:#ffad49;flex:none}
 .stats-range{color:#ffb46a;font-size:12px;font-weight:750;padding:0 0 12px;border-bottom:1px solid #3b3230;margin-bottom:3px}.stats-filters{display:flex;gap:7px;align-items:center;max-width:70%}.stats-filters select{min-width:0;max-width:100%;font-size:12px;padding:9px 7px}@media(max-width:380px){.stats-filters{max-width:73%}.stats-filters select{font-size:11px}}
+
+/* iPhone compact dashboard — clearer spacing and fully visible actions */
+.dashboard-home{gap:16px!important;height:auto!important;justify-content:flex-start!important;padding-bottom:16px}
+.dashboard-home .period-card{padding:11px 15px 10px!important;min-height:0!important;border-radius:18px}
+.dashboard-home .period-heading{font-size:10px}
+.dashboard-home .period-money{font-size:clamp(30px,8.5vw,39px);margin:6px 0 8px;line-height:1.08}
+.dashboard-home .period-metrics{padding-top:7px;gap:5px}
+.dashboard-home .period-metrics span{font-size:10px}
+.dashboard-home .period-metrics b{font-size:13px}
+.dashboard-home .weekly{padding:10px 14px!important}
+.dashboard-home .weekly h2{margin:0 0 5px;font-size:12px}
+.dashboard-home .weekly-bars{height:72px!important}
+.dashboard-home .week-value{height:14px}
+.dashboard-home .week-track{height:43px!important}
+.dashboard-home .week-day{margin-top:4px}
+.dashboard-home .payout{padding:10px 14px!important}
+.dashboard-home .home-actions{gap:9px}
+.dashboard-home .home-actions .home-add,.dashboard-home .home-actions .act-button{min-height:44px;padding:10px 12px;font-size:16px}
+body:has(.dashboard-home:not(.hide)){overflow:auto!important}
+main:has(.dashboard-home:not(.hide)){height:auto!important;overflow:visible!important;padding-bottom:calc(95px + env(safe-area-inset-bottom))}
+@media(max-height:760px){.dashboard-home{gap:13px!important}.dashboard-home .weekly-bars{height:64px!important}.dashboard-home .week-track{height:35px!important}}
 </style></head><body><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>

@@ -187,21 +187,18 @@ main > section::-webkit-scrollbar, .panel::-webkit-scrollbar,
 .backup-button span{min-width:0}.backup-button small{display:block;margin-top:3px;color:#bba79a;font-size:10px;font-weight:650}
 @media(max-width:360px){.backup-actions{gap:7px}.backup-actions .backup-button{gap:6px;padding:9px 5px;font-size:12px}.backup-icon{width:21px;height:21px;min-width:21px}}
 
-/* iOS standalone: фиксируем высоту по актуальному viewport уже при запуске. */
-html { height:100%; min-height:100%; }
-body { min-height:var(--app-viewport-height, 100dvh); }
-body:has(#home:not(.hide)) { height:var(--app-viewport-height, 100dvh)!important; }
-body:has(#home:not(.hide)) .nav { position:fixed!important; bottom:0!important; }
-
-/* Главная: неподвижный экран, автоматическое вписывание содержимого над меню */
-body:has(#home:not(.hide)){
-  height:100dvh!important;
+/* Универсальная адаптация PWA: iOS, Android, браузер и установленное приложение. */
+html { min-height:100%; width:100%; overflow-x:hidden; }
+body { min-height:100vh; min-height:100dvh; width:100%; overflow-x:hidden; }
+.nav { bottom:0; width:100%; }
+body:has(#home:not(.hide)) {
+  height:var(--app-viewport-height, 100dvh)!important;
   min-height:0!important;
   overflow:hidden!important;
   overscroll-behavior:none;
   padding-bottom:0!important;
 }
-body:has(#home:not(.hide)) main{
+body:has(#home:not(.hide)) main {
   position:fixed!important;
   top:var(--home-top, 78px)!important;
   bottom:var(--home-bottom, 75px)!important;
@@ -212,7 +209,7 @@ body:has(#home:not(.hide)) main{
   padding-bottom:0!important;
   margin:0 auto!important;
 }
-#home:not(.hide){
+#home:not(.hide) {
   height:auto!important;
   max-height:none!important;
   padding-bottom:0!important;
@@ -221,6 +218,9 @@ body:has(#home:not(.hide)) main{
   transform:scale(var(--home-scale, 1));
   width:calc(100% / var(--home-scale, 1));
   overflow:visible;
+}
+@media (orientation:landscape) and (max-height:500px) {
+  body:has(#home:not(.hide)) main { overflow:hidden!important; }
 }
 </style></head><body><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
@@ -330,51 +330,62 @@ $('homeAdd').onclick=()=>{clearForm();switchTab('add')};
 clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkActReminder,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkActReminder()});if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 <script>
-/* iPhone PWA: подгоняем главную под видимую область без вертикальной прокрутки. */
+/* Адаптивная компоновка главной под любой размер экрана. */
 (function(){
   const home=document.getElementById('home');
   const header=document.querySelector('body > header');
   const nav=document.querySelector('nav.nav');
-  const main=document.querySelector('main');
   let pending=false;
+  let lastHeight=0;
+  function viewportHeight(){
+    // visualViewport учитывает динамические панели мобильных браузеров.
+    // При открытой клавиатуре не уменьшаем высоту главной страницы.
+    const visual=window.visualViewport;
+    const inner=window.innerHeight;
+    if(!visual)return inner;
+    const keyboardOpen=document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+    return keyboardOpen?inner:Math.min(inner,Math.round(visual.height+visual.offsetTop));
+  }
   function fitHome(){
     pending=false;
-    // В iOS при открытии с домашнего экрана высота viewport иногда
-    // уточняется после первого кадра. Повторно фиксируем её на каждом проходе.
-    const vv=window.visualViewport;
-    const viewport=Math.round(vv ? vv.height + vv.offsetTop : window.innerHeight);
+    const viewport=Math.max(1,viewportHeight());
+    lastHeight=viewport;
     document.documentElement.style.setProperty('--app-viewport-height',viewport+'px');
     if(home.classList.contains('hide'))return;
-    const top=Math.ceil(header.getBoundingClientRect().bottom)+5;
-    const bottom=Math.ceil(nav.getBoundingClientRect().height)+5;
+    const top=Math.max(0,Math.ceil(header.getBoundingClientRect().bottom)+5);
+    const bottom=Math.max(0,Math.ceil(nav.getBoundingClientRect().height)+5);
     document.body.style.setProperty('--home-top',top+'px');
     document.body.style.setProperty('--home-bottom',bottom+'px');
-    home.style.setProperty('--home-scale','1');
     const available=Math.max(1,viewport-top-bottom);
-    // При масштабе меняется ширина разметки; повторяем расчёт для точного вписывания.
+    // Высота зависит от ширины текста; рассчитываем повторно при масштабировании.
     let scale=1;
-    for(let i=0;i<4;i++){
+    for(let i=0;i<5;i++){
       home.style.setProperty('--home-scale',String(scale));
-      const natural=home.scrollHeight;
+      const natural=Math.max(home.scrollHeight,home.getBoundingClientRect().height/scale);
       const next=Math.min(1,available/Math.max(1,natural));
-      if(Math.abs(next-scale)<0.002){scale=next;break;}
+      if(Math.abs(next-scale)<0.001){scale=next;break}
       scale=next;
     }
-    home.style.setProperty('--home-scale',String(Math.max(.1,scale*.995)));
-    window.scrollTo(0,0);
+    home.style.setProperty('--home-scale',String(Math.max(0.1,scale*0.995)));
+    if(window.scrollY)window.scrollTo(0,0);
   }
   function schedule(){if(!pending){pending=true;requestAnimationFrame(fitHome)}}
   new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(schedule).observe(home,{childList:true,subtree:true,characterData:true});
+  if(window.ResizeObserver){
+    const observer=new ResizeObserver(schedule);
+    observer.observe(header);observer.observe(nav);
+  }
   window.addEventListener('resize',schedule);
   window.addEventListener('orientationchange',schedule);
   window.addEventListener('pageshow',schedule);
   window.addEventListener('focus',schedule);
-  // iOS PWA может скорректировать viewport уже после запуска без resize.
-  [100,300,700,1400,2500].forEach(delay=>setTimeout(schedule,delay));
-  if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
-  // Обновление сумм и графика может менять высоту контента.
-  new MutationObserver(schedule).observe(home,{childList:true,subtree:true,characterData:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',schedule);
+    window.visualViewport.addEventListener('scroll',schedule);
+  }
+  [80,250,600,1200,2200].forEach(delay=>setTimeout(schedule,delay));
   schedule();
 })();
 </script>

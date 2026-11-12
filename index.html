@@ -246,6 +246,42 @@ body.entry-locked > header,body.entry-locked > main,body.entry-locked > .nav{vis
 .entry-subtitle{font-size:11px;letter-spacing:2px;color:#b4a8a4;margin-top:-13px}
 #enterApp{width:min(100%,340px);height:60px;border-radius:17px;border:1px solid #ffc05c;background:linear-gradient(180deg,#ffb000,#ff7800 60%,#e95a00);color:white;font-size:20px;font-weight:850;box-shadow:0 8px 28px #ff6a0036;cursor:pointer;touch-action:manipulation}
 #enterApp:active{filter:brightness(.9)}
+
+/* Главная: разрешена обычная вертикальная прокрутка на всех телефонах. */
+html, body { overscroll-behavior-y:auto!important; }
+body:has(#home:not(.hide)) {
+  position:static!important;
+  inset:auto!important;
+  height:auto!important;
+  min-height:100dvh!important;
+  padding-bottom:calc(90px + env(safe-area-inset-bottom))!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  display:block!important;
+}
+body:has(#home:not(.hide)) > main {
+  position:static!important;
+  display:block!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  padding-bottom:calc(24px + env(safe-area-inset-bottom))!important;
+}
+body:has(#home:not(.hide)) > .nav {
+  position:fixed!important;
+  bottom:0!important;
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+}
+#home:not(.hide) {
+  height:auto!important;
+  max-height:none!important;
+  transform:none!important;
+  width:100%!important;
+  overflow:visible!important;
+  padding-bottom:16px!important;
+}
 </style></head><body class="entry-locked"><div id="entryScreen" role="dialog" aria-modal="true" aria-label="Вход в Курьер PRO"><div class="entry-mark" aria-hidden="true">➤</div><div class="entry-name">КУРЬЕР <em>PRO</em></div><div class="entry-subtitle">ДОСТАВКА · СМЕНЫ · ДОХОД</div><button id="enterApp" type="button">Войти в приложение</button></div><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
@@ -353,39 +389,7 @@ $('homeAdd').onclick=()=>{clearForm();switchTab('add')};
 
 clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkActReminder,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkActReminder()});if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
-<script>
-/* Подгоняем только содержимое. Размер экрана и положение меню
-   определяются CSS, без конфликтующих JS-измерений viewport. */
-(function(){
-  const home=document.getElementById('home');
-  const main=document.querySelector('body > main');
-  let pending=false;
-  function fitHome(){
-    pending=false;
-    if(home.classList.contains('hide'))return;
-    home.style.setProperty('--home-scale','1');
-    const available=Math.max(1,main.clientHeight);
-    const natural=Math.max(1,home.scrollHeight);
-    const scale=Math.min(1,available/natural);
-    home.style.setProperty('--home-scale',String(Math.max(.1,scale*.995)));
-    if(window.scrollY)window.scrollTo(0,0);
-  }
-  function schedule(){if(!pending){pending=true;requestAnimationFrame(fitHome)}}
-  new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:['class']});
-  new MutationObserver(schedule).observe(home,{childList:true,subtree:true,characterData:true});
-  if(window.ResizeObserver){
-    const observer=new ResizeObserver(schedule);
-    observer.observe(main);
-  }
-  window.addEventListener('resize',schedule);
-  window.addEventListener('orientationchange',schedule);
-  window.addEventListener('pageshow',schedule);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
-  if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
-  [100,400,1000].forEach(delay=>setTimeout(schedule,delay));
-  schedule();
-})();
-</script>
+
 <script>
 (function(){
   const button=document.getElementById('enterApp');

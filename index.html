@@ -319,6 +319,11 @@ body>.nav,body:has(#home:not(.hide))>.nav{
 /* Не даём старым правилам фиксировать страницу и масштабировать главную. */
 body.entry-locked>header,body.entry-locked>main,body.entry-locked>.nav{visibility:hidden!important}
 @supports(height:100svh){body,body:has(#home:not(.hide)){height:100dvh!important}}
+
+/* iOS Safari: native date input must not exceed its form card. */
+#add .panel, #add .field { min-width:0; max-width:100%; }
+#add .field input { display:block; box-sizing:border-box; min-width:0; max-width:100%; }
+#add input[type="date"] { width:100%!important; min-width:0!important; max-width:100%!important; display:block; font-size:16px; }
 </style></head><body class="entry-locked"><div id="entryScreen" role="dialog" aria-modal="true" aria-label="Вход в Курьер PRO"><div class="entry-mark" aria-hidden="true">➤</div><div class="entry-name">КУРЬЕР <em>PRO</em></div><div class="entry-subtitle">ДОСТАВКА · СМЕНЫ · ДОХОД</div><button id="enterApp" type="button">Войти в приложение</button></div><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>

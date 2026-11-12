@@ -187,6 +187,12 @@ main > section::-webkit-scrollbar, .panel::-webkit-scrollbar,
 .backup-button span{min-width:0}.backup-button small{display:block;margin-top:3px;color:#bba79a;font-size:10px;font-weight:650}
 @media(max-width:360px){.backup-actions{gap:7px}.backup-actions .backup-button{gap:6px;padding:9px 5px;font-size:12px}.backup-icon{width:21px;height:21px;min-width:21px}}
 
+/* iOS standalone: фиксируем высоту по актуальному viewport уже при запуске. */
+html { height:100%; min-height:100%; }
+body { min-height:var(--app-viewport-height, 100dvh); }
+body:has(#home:not(.hide)) { height:var(--app-viewport-height, 100dvh)!important; }
+body:has(#home:not(.hide)) .nav { position:fixed!important; bottom:0!important; }
+
 /* Главная: неподвижный экран, автоматическое вписывание содержимого над меню */
 body:has(#home:not(.hide)){
   height:100dvh!important;
@@ -333,8 +339,12 @@ clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkAct
   let pending=false;
   function fitHome(){
     pending=false;
+    // В iOS при открытии с домашнего экрана высота viewport иногда
+    // уточняется после первого кадра. Повторно фиксируем её на каждом проходе.
+    const vv=window.visualViewport;
+    const viewport=Math.round(vv ? vv.height + vv.offsetTop : window.innerHeight);
+    document.documentElement.style.setProperty('--app-viewport-height',viewport+'px');
     if(home.classList.contains('hide'))return;
-    const viewport=window.innerHeight;
     const top=Math.ceil(header.getBoundingClientRect().bottom)+5;
     const bottom=Math.ceil(nav.getBoundingClientRect().height)+5;
     document.body.style.setProperty('--home-top',top+'px');
@@ -356,6 +366,11 @@ clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkAct
   function schedule(){if(!pending){pending=true;requestAnimationFrame(fitHome)}}
   new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:['class']});
   window.addEventListener('resize',schedule);
+  window.addEventListener('orientationchange',schedule);
+  window.addEventListener('pageshow',schedule);
+  window.addEventListener('focus',schedule);
+  // iOS PWA может скорректировать viewport уже после запуска без resize.
+  [100,300,700,1400,2500].forEach(delay=>setTimeout(schedule,delay));
   if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
   // Обновление сумм и графика может менять высоту контента.

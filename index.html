@@ -177,6 +177,45 @@ html, body, main, main > section, .panel, .payroll-cards {
 html::-webkit-scrollbar, body::-webkit-scrollbar, main::-webkit-scrollbar,
 main > section::-webkit-scrollbar, .panel::-webkit-scrollbar,
 .payroll-cards::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+
+/* Matching export/import controls */
+.backup-panel{padding:14px!important}
+.backup-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.backup-actions .backup-button{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-width:0;min-height:58px;padding:10px 8px;border:1px solid #765039;border-radius:14px;background:linear-gradient(145deg,#332923,#211e20);color:#ffe5ce;font-size:13px;font-weight:750;line-height:1.2;text-align:left;cursor:pointer}
+.backup-actions .backup-button:active{background:#493328}
+.backup-icon{width:24px;height:24px;min-width:24px;flex:none;color:#ff9d3f}
+.backup-button span{min-width:0}.backup-button small{display:block;margin-top:3px;color:#bba79a;font-size:10px;font-weight:650}
+@media(max-width:360px){.backup-actions{gap:7px}.backup-actions .backup-button{gap:6px;padding:9px 5px;font-size:12px}.backup-icon{width:21px;height:21px;min-width:21px}}
+
+/* Главная: неподвижный экран, автоматическое вписывание содержимого над меню */
+body:has(#home:not(.hide)){
+  height:100dvh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  overscroll-behavior:none;
+  padding-bottom:0!important;
+}
+body:has(#home:not(.hide)) main{
+  position:fixed!important;
+  top:var(--home-top, 78px)!important;
+  bottom:var(--home-bottom, 75px)!important;
+  left:0!important;
+  right:0!important;
+  height:auto!important;
+  overflow:hidden!important;
+  padding-bottom:0!important;
+  margin:0 auto!important;
+}
+#home:not(.hide){
+  height:auto!important;
+  max-height:none!important;
+  padding-bottom:0!important;
+  justify-content:flex-start!important;
+  transform-origin:top left;
+  transform:scale(var(--home-scale, 1));
+  width:calc(100% / var(--home-scale, 1));
+  overflow:visible;
+}
 </style></head><body><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
@@ -186,7 +225,7 @@ main > section::-webkit-scrollbar, .panel::-webkit-scrollbar,
 <div class="home-actions"><button class="primary home-add" id="homeAdd" type="button">⊕ &nbsp; Добавить смену</button><button class="act-button" type="button" id="actButton" disabled aria-label="Подписание акта выплаты">Акт выплаты</button></div>
 <div class="hide" aria-hidden="true"><span id="homeOrders"></span><span id="homeKm"></span><span id="allMoney"></span><span id="allOrders"></span><span id="avgShift"></span><span id="allKm"></span><div id="recent"></div></div>
 </section>
-<section id="history" class="hide"><div class="section-title"><h2>История смен</h2><select id="filterMonth"></select></div><div class="panel" id="historyList"></div><div class="panel history-cleanup"><div class="cleanup-heading"><span class="cleanup-icon" aria-hidden="true">▤</span><div><h3>Очистка истории</h3><span>Управление сохранёнными сменами</span></div></div><div class="cleanup-warning"><span aria-hidden="true">ⓘ</span><p>Перед удалением <strong>сохраните резервную копию</strong>. Восстановить удалённые смены можно только из неё.</p></div><div class="cleanup-grid"><button class="cleanup-action" id="clearDay" type="button"><span class="cleanup-action-icon" aria-hidden="true">◷</span><span>За сегодня</span></button><button class="cleanup-action" id="clearWeek" type="button"><span class="cleanup-action-icon" aria-hidden="true">▦</span><span>За неделю</span></button><button class="cleanup-action" id="clearMonth" type="button"><span class="cleanup-action-icon" aria-hidden="true">▣</span><span>За месяц</span></button><button class="cleanup-action cleanup-action-all" id="clearAll" type="button"><span class="cleanup-action-icon" aria-hidden="true">✕</span><span>За всё время</span></button></div><div class="cleanup-footnote">Перед удалением появится подтверждение</div></div><div class="panel"><button class="secondary" id="exportBtn">Экспорт истории (JSON)</button> <button class="secondary" id="importBtn">Импорт истории</button><input type="file" id="importFile" accept="application/json" class="hide"></div></section>
+<section id="history" class="hide"><div class="section-title"><h2>История смен</h2><select id="filterMonth"></select></div><div class="panel" id="historyList"></div><div class="panel history-cleanup"><div class="cleanup-heading"><span class="cleanup-icon" aria-hidden="true">▤</span><div><h3>Очистка истории</h3><span>Управление сохранёнными сменами</span></div></div><div class="cleanup-warning"><span aria-hidden="true">ⓘ</span><p>Перед удалением <strong>сохраните резервную копию</strong>. Восстановить удалённые смены можно только из неё.</p></div><div class="cleanup-grid"><button class="cleanup-action" id="clearDay" type="button"><span class="cleanup-action-icon" aria-hidden="true">◷</span><span>За сегодня</span></button><button class="cleanup-action" id="clearWeek" type="button"><span class="cleanup-action-icon" aria-hidden="true">▦</span><span>За неделю</span></button><button class="cleanup-action" id="clearMonth" type="button"><span class="cleanup-action-icon" aria-hidden="true">▣</span><span>За месяц</span></button><button class="cleanup-action cleanup-action-all" id="clearAll" type="button"><span class="cleanup-action-icon" aria-hidden="true">✕</span><span>За всё время</span></button></div><div class="cleanup-footnote">Перед удалением появится подтверждение</div></div><div class="panel backup-panel"><div class="backup-actions"><button class="secondary backup-button" id="exportBtn" type="button"><svg class="backup-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><span>Экспорт истории</span></button><button class="secondary backup-button" id="importBtn" type="button"><svg class="backup-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4L8 8"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><span>Импорт истории</span></button></div><input type="file" id="importFile" accept="application/json" class="hide"></div></section>
 <section id="payouts" class="hide"><div class="section-title"><h2>Выплаты</h2></div><div class="panel payout next-payment"><div class="next-payment-heading"><span class="next-payment-heading-icon" aria-hidden="true">◷</span><span>БЛИЖАЙШАЯ ВЫПЛАТА</span></div><div id="payoutPageSummary" class="next-payment-summary"></div><div class="next-payment-reminders"><div class="next-payment-reminders-title">Напоминание о подписании акта</div><button type="button" id="enableActNotifications">🔔 &nbsp; Включить напоминания</button><div class="next-payment-reminders-note"><span aria-hidden="true">ⓘ</span><span>Когда приложение открыто.</span></div></div></div><div class="panel payroll-panel"><h3 class="payroll-title"><span class="payroll-title-icon" aria-hidden="true">▦</span>Расчётные недели</h3><div id="payrollHistory" class="payroll-cards"></div><p class="payroll-note">Расчётный период: воскресенье — суббота. Выплата — следующий вторник. Получение отмечается вручную.</p></div></section>
 <section id="add" class="hide"><div class="section-title"><h2 id="formTitle">Новая смена</h2></div><div class="panel"><div id="editBanner"></div><label class="upload">📷<strong>Выбрать скриншот</strong><small>Фото из приложения доставки</small><input id="photo" type="file" accept="image/*"></label><img id="preview" alt="Предпросмотр скриншота"><p id="status">После выбора изображения попробуем распознать цифры. Все значения можно проверить и исправить вручную.</p><div class="field"><label>Дата рабочей смены</label><input id="date" type="date"></div><div class="field"><label>Количество заказов</label><input id="orders" type="number" min="0" step="1" inputmode="numeric"></div><div class="field"><label>Оплата за заказы, ₽</label><input id="orderPay" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Пройдено километров</label><input id="km" type="number" min="0" step="0.001" inputmode="decimal"></div><div class="field"><label>Оплата за путь, ₽</label><input id="pathPay" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Итого за смену, ₽</label><input id="total" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary" id="save">Сохранить смену</button><button class="secondary hide" id="cancelEdit" style="width:100%;margin-top:10px">Отменить редактирование</button></div></section>
 <section id="stats" class="hide"><div class="section-title"><h2>Аналитика</h2><div class="stats-filters"><select id="statsPeriod" aria-label="Период аналитики"><option value="week" selected>За неделю</option><option value="month">За месяц</option><option value="year">За год</option></select></div></div><div class="panel" id="statsContent"></div><div class="section-title"><h2>Заработок по сменам</h2></div><div class="panel" id="chart"></div></section>
@@ -283,4 +322,45 @@ $('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify(shifts,null,2)],{t
 $('homeAdd').onclick=()=>{clearForm();switchTab('add')};
 
 clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkActReminder,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkActReminder()});if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script></body></html>
+</script>
+<script>
+/* iPhone PWA: подгоняем главную под видимую область без вертикальной прокрутки. */
+(function(){
+  const home=document.getElementById('home');
+  const header=document.querySelector('body > header');
+  const nav=document.querySelector('nav.nav');
+  const main=document.querySelector('main');
+  let pending=false;
+  function fitHome(){
+    pending=false;
+    if(home.classList.contains('hide'))return;
+    const viewport=window.innerHeight;
+    const top=Math.ceil(header.getBoundingClientRect().bottom)+5;
+    const bottom=Math.ceil(nav.getBoundingClientRect().height)+5;
+    document.body.style.setProperty('--home-top',top+'px');
+    document.body.style.setProperty('--home-bottom',bottom+'px');
+    home.style.setProperty('--home-scale','1');
+    const available=Math.max(1,viewport-top-bottom);
+    // При масштабе меняется ширина разметки; повторяем расчёт для точного вписывания.
+    let scale=1;
+    for(let i=0;i<4;i++){
+      home.style.setProperty('--home-scale',String(scale));
+      const natural=home.scrollHeight;
+      const next=Math.min(1,available/Math.max(1,natural));
+      if(Math.abs(next-scale)<0.002){scale=next;break;}
+      scale=next;
+    }
+    home.style.setProperty('--home-scale',String(Math.max(.1,scale*.995)));
+    window.scrollTo(0,0);
+  }
+  function schedule(){if(!pending){pending=true;requestAnimationFrame(fitHome)}}
+  new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',schedule);
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
+  // Обновление сумм и графика может менять высоту контента.
+  new MutationObserver(schedule).observe(home,{childList:true,subtree:true,characterData:true});
+  schedule();
+})();
+</script>
+</body></html>

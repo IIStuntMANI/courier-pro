@@ -156,40 +156,18 @@ main{max-width:480px;padding:13px 15px 0;margin:auto}
 .dashboard-home .week-day{margin-top:4px}
 .dashboard-home .payout{padding:10px 14px!important}
 .dashboard-home .home-actions{gap:9px}
-.dashboard-home .home-actions .home-add,.dashboard-home .home-actions .act-button{height:60px;min-height:60px;padding:10px 12px;font-size:16px;display:flex;align-items:center;justify-content:center}
+.dashboard-home .home-actions .home-add,.dashboard-home .home-actions .act-button{min-height:44px;padding:10px 12px;font-size:16px}
 body:has(.dashboard-home:not(.hide)){overflow:auto!important}
 main:has(.dashboard-home:not(.hide)){height:auto!important;overflow:visible!important;padding-bottom:calc(95px + env(safe-area-inset-bottom))}
 @media(max-height:760px){.dashboard-home{gap:13px!important}.dashboard-home .weekly-bars{height:64px!important}.dashboard-home .week-track{height:35px!important}}
 
-/* Главная: фиксированный экран без вертикальной прокрутки */
-html:has(#home:not(.hide)){height:100%;overflow:hidden}
-body:has(#home:not(.hide)){height:100dvh;min-height:0;overflow:hidden!important;padding-bottom:0;display:flex;flex-direction:column}
-body:has(#home:not(.hide))>header{width:100%;flex:none}
-body:has(#home:not(.hide))>main{width:100%;flex:1 1 auto;min-height:0;height:auto!important;overflow:hidden!important;padding:8px 15px calc(77px + env(safe-area-inset-bottom))!important;display:flex;flex-direction:column}
-#home:not(.hide){height:100%!important;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between!important;gap:clamp(5px,1.15dvh,12px)!important;padding-bottom:0!important}
-#home .period-card{flex:0 1 auto;min-height:0}
-#home .weekly{flex:0 1 auto;min-height:0}
-#home .home-actions{flex:0 0 auto;gap:7px}
-#home .home-actions .home-add,#home .home-actions .act-button{height:60px!important;min-height:60px!important;flex-shrink:0}
-@media(max-height:760px){
- #home .period-card{padding:8px 13px 7px!important}
- #home .period-money{font-size:clamp(26px,7.5vw,33px);margin:4px 0 5px}
- #home .period-metrics{padding-top:5px}
- #home .weekly{padding:7px 12px!important}
- #home .weekly-bars{height:57px!important}
- #home .week-track{height:29px!important}
- #home .payout{padding:7px 12px!important}
- #home .home-actions{gap:5px}
- body:has(#home:not(.hide))>main{padding-top:5px!important}
-}
-@media(max-height:650px){
- body:has(#home:not(.hide))>header{padding-top:calc(env(safe-area-inset-top) + 8px);padding-bottom:8px}
- #home .period-heading{font-size:9px}
- #home .period-card{padding:6px 11px!important}
- #home .period-money{font-size:25px;margin:3px 0 4px}
- #home .weekly-bars{height:48px!important}
- #home .week-track{height:22px!important}
-}
+/* Размеры главной страницы — значения, выбранные пользователем */
+#home.dashboard-home{gap:15px!important}
+#home .period-month{width:100%;height:120px;min-height:120px;flex-shrink:0}
+#home .period-week{width:100%;height:120px;min-height:120px;flex-shrink:0}
+#home #payrollSummary{width:100%;height:60px;min-height:60px;flex-shrink:0}
+#home .weekly{width:100%;height:130px;min-height:130px;flex-shrink:0}
+#home #homeAdd,#home #actButton{width:100%;height:65px;min-height:65px!important;max-height:65px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 </style></head><body><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
@@ -261,7 +239,7 @@ function renderPayroll(){
  let payday=next?addDays(next[0],9):addDays(current,9);
  let scheduled=next?sum(next[1],'total'):0;
  let provisional=next&&next[0]===current;
- $('payrollSummary').innerHTML=`<div class="payout-line"><div><small>БЛИЖАЙШАЯ ВЫПЛАТА</small><strong>${dateText(payday)}</strong>${provisional?'<span style="display:block;font-size:10px;color:#b9a9a2;margin-top:4px">Предварительная сумма за текущую неделю</span>':''}</div><b>${money(scheduled)}</b></div>`;
+ $('payrollSummary').innerHTML=`<div class="payout-line"><div><small>БЛИЖАЙШАЯ ВЫПЛАТА</small><strong>${dateText(payday)}</strong></div><b>${money(scheduled)}</b></div>`;
  $('payoutPageSummary').innerHTML=`<div class="next-payment-date">${dateText(payday)}</div><div class="next-payment-amount">${money(scheduled)}</div>${provisional?'<div class="next-payment-provisional">Предварительная сумма за текущую неделю</div>':''}`;
  updateActButton();$('payrollHistory').innerHTML=payrollGroups().map(([w,a])=>{
   const pay=addDays(w,9),received=!!paid[w],overdue=pay<today;

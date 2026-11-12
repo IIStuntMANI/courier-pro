@@ -160,81 +160,6 @@ main{max-width:480px;padding:13px 15px 0;margin:auto}
 body:has(.dashboard-home:not(.hide)){overflow:auto!important}
 main:has(.dashboard-home:not(.hide)){height:auto!important;overflow:visible!important;padding-bottom:calc(95px + env(safe-area-inset-bottom))}
 @media(max-height:760px){.dashboard-home{gap:13px!important}.dashboard-home .weekly-bars{height:64px!important}.dashboard-home .week-track{height:35px!important}}
-
-/* iPhone: fixed viewport on three tabs; only their data lists scroll internally. */
-@media(max-width:700px){
- body:has(#home:not(.hide)),body:has(#history:not(.hide)),body:has(#payouts:not(.hide)){overflow:hidden!important;height:100dvh!important;padding-bottom:0!important}
- main:has(#home:not(.hide)),main:has(#history:not(.hide)),main:has(#payouts:not(.hide)){position:fixed!important;top:var(--app-top,85px)!important;bottom:var(--app-bottom,80px)!important;left:0;right:0;width:100%;max-width:700px;margin:auto;height:auto!important;overflow:hidden!important;padding:0 13px 5px!important}
- #home:not(.hide),#history:not(.hide),#payouts:not(.hide){height:100%;min-height:0;overflow:hidden!important}
- #home.dashboard-home{display:flex;flex-direction:column;justify-content:space-between!important;gap:clamp(7px,1.3dvh,16px)!important;padding-bottom:0!important}
- #home .period-card{padding:clamp(8px,1.15dvh,13px) 14px!important;flex-shrink:1;min-height:0!important}
- #home .period-money{font-size:clamp(27px,4.3dvh,38px)!important;margin:clamp(3px,.6dvh,7px) 0!important}
- #home .period-metrics{padding-top:clamp(4px,.6dvh,8px)!important}
- #home .weekly{padding:8px 13px!important;flex-shrink:1;min-height:0}
- #home .weekly-bars{height:clamp(43px,8dvh,72px)!important}
- #home .week-track{height:clamp(20px,4.5dvh,43px)!important}
- #home .payout{padding:8px 13px!important;flex-shrink:1}
- #home .home-actions{gap:clamp(6px,.9dvh,10px)!important;flex-shrink:0}
- #home .home-actions .home-add,#home .home-actions .act-button{min-height:clamp(43px,6dvh,58px)!important;font-size:clamp(16px,2.5dvh,20px)!important;padding:8px 12px!important}
- #history,#payouts{display:flex;flex-direction:column;gap:clamp(5px,.8dvh,10px)}
- #history>.section-title,#payouts>.section-title{margin:3px 2px 2px;flex:none}
- #history>.section-title h2,#payouts>.section-title h2{font-size:16px}
- #history>.panel,#payouts>.panel{margin-top:0!important;min-height:0}
- #history #historyList{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;padding:6px 12px!important;-webkit-overflow-scrolling:touch}
- #history .day{padding:7px 0}
- #history .day small{margin-top:2px}
- #history .history-cleanup{flex:none;padding:9px 11px!important}
- #history .cleanup-heading{margin-bottom:5px}
- #history .cleanup-heading h3{font-size:14px;margin:0}
- #history .cleanup-heading span,#history .cleanup-footnote{display:none}
- #history .cleanup-warning{padding:5px 8px;margin:5px 0;font-size:10px}
- #history .cleanup-warning p{margin:0}
- #history .cleanup-grid{gap:5px}
- #history .cleanup-action{min-height:31px;padding:5px 7px;font-size:11px;gap:5px}
- #history .cleanup-action-icon{width:21px;height:21px;font-size:12px}
- #history>.panel:last-child{flex:none;padding:7px 9px;display:flex;gap:7px}
- #history>.panel:last-child .secondary{flex:1;min-width:0;padding:8px 4px;font-size:11px}
- #payouts .next-payment{flex:none;padding:10px 13px!important}
- #payouts .next-payment-reminders{margin-top:8px;padding-top:8px}
- #payouts .next-payment-reminders-title{margin-bottom:5px}
- #payouts .next-payment-reminders button{min-height:34px}
- #payouts .next-payment-reminders-note{margin-top:5px}
- #payouts .payroll-panel{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:10px 12px!important}
- #payouts .payroll-title{flex:none;margin:0 0 8px}
- #payouts .payroll-cards{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;gap:7px;align-content:start}
- #payouts .payroll-card{padding:9px 10px;border-radius:12px}
- #payouts .payroll-card-head{gap:6px}
- #payouts .payroll-note{flex:none;margin:7px 0 0;font-size:10px;line-height:1.25}
-}
-
-/* Touch-friendly main actions: iPhone, large icons and comfortable tap targets */
-@media(max-width:700px){
- #home .home-actions{gap:10px!important;flex:0 0 auto!important}
- #home .home-actions .home-add,
- #home .home-actions .act-button{
-   width:100%!important;min-height:80px!important;height:80px!important;
-   padding:8px 16px!important;font-size:18px!important;
-   border-radius:17px!important;line-height:1.2!important;
-   display:flex!important;align-items:center!important;justify-content:center!important;
-   gap:12px!important;touch-action:manipulation!important;
- }
- #home .home-actions .home-add{font-size:0!important}
- #home .home-actions .home-add::before{content:'⊕';font-size:34px!important;line-height:1;font-weight:700}
- #home .home-actions .home-add::after{content:'Добавить смену';font-size:19px!important;font-weight:850}
- #home .home-actions .act-button::before{content:'▤';font-size:28px!important;line-height:1;color:inherit}
- #home .period-card{padding-top:7px!important;padding-bottom:7px!important}
- #home .period-money{margin:3px 0 5px!important}
- #home .period-metrics{padding-top:5px!important}
- #home .weekly{padding-top:6px!important;padding-bottom:6px!important}
- #home .weekly-bars{height:clamp(38px,6dvh,58px)!important}
- #home .week-track{height:clamp(17px,3.5dvh,32px)!important}
- #home .payout{padding-top:7px!important;padding-bottom:7px!important}
- #home.dashboard-home{gap:clamp(5px,.85dvh,10px)!important}
-}
-@media(max-width:700px) and (max-height:690px){
- #home .home-actions .home-add,#home .home-actions .act-button{min-height:55px!important;height:55px!important}
- #home .home-actions{gap:7px!important}
-}
 </style></head><body><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
@@ -249,7 +174,7 @@ main:has(.dashboard-home:not(.hide)){height:auto!important;overflow:visible!impo
 <section id="add" class="hide"><div class="section-title"><h2 id="formTitle">Новая смена</h2></div><div class="panel"><div id="editBanner"></div><label class="upload">📷<strong>Выбрать скриншот</strong><small>Фото из приложения доставки</small><input id="photo" type="file" accept="image/*"></label><img id="preview" alt="Предпросмотр скриншота"><p id="status">После выбора изображения попробуем распознать цифры. Все значения можно проверить и исправить вручную.</p><div class="field"><label>Дата рабочей смены</label><input id="date" type="date"></div><div class="field"><label>Количество заказов</label><input id="orders" type="number" min="0" step="1" inputmode="numeric"></div><div class="field"><label>Оплата за заказы, ₽</label><input id="orderPay" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Пройдено километров</label><input id="km" type="number" min="0" step="0.001" inputmode="decimal"></div><div class="field"><label>Оплата за путь, ₽</label><input id="pathPay" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Итого за смену, ₽</label><input id="total" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary" id="save">Сохранить смену</button><button class="secondary hide" id="cancelEdit" style="width:100%;margin-top:10px">Отменить редактирование</button></div></section>
 <section id="stats" class="hide"><div class="section-title"><h2>Аналитика</h2><div class="stats-filters"><select id="statsPeriod" aria-label="Период аналитики"><option value="week" selected>За неделю</option><option value="month">За месяц</option><option value="year">За год</option></select></div></div><div class="panel" id="statsContent"></div><div class="section-title"><h2>Заработок по сменам</h2></div><div class="panel" id="chart"></div></section>
 </main><div id="photoViewer" class="photo-viewer hide" role="dialog" aria-modal="true" aria-label="Скриншот смены"><button id="closePhoto" class="secondary">✕ Закрыть скриншот</button><img id="viewPhoto" alt="Скриншот смены"></div><nav class="nav"><button data-tab="home" class="active"><span>⌂</span>Главная</button><button data-tab="history"><span>▦</span>Смены</button><button data-tab="payouts"><span>▣</span>Выплаты</button><button data-tab="stats"><span>▥</span>Статистика</button></nav><script>
-const KEY='courier-pro-shifts-v1';let shifts=load(),editing=null,pendingPhoto=null;const photoDates=new Set();const $=id=>document.getElementById(id);const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n||0)+' ₽';const num=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(n||0);const isoLocal=d=>{let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};function load(){try{let a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch{return []}}function persist(){try{localStorage.setItem(KEY,JSON.stringify(shifts));return true}catch{alert('Не удалось сохранить данные. Проверьте свободное место в браузере.');return false}}function sum(a,k){return a.reduce((s,x)=>s+(Number(x[k])||0),0)}function dateText(d){return new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}function fitAppViewport(){const h=document.querySelector('header'),n=document.querySelector('.nav');if(h&&n){document.documentElement.style.setProperty('--app-top',Math.ceil(h.getBoundingClientRect().bottom)+'px');document.documentElement.style.setProperty('--app-bottom',Math.ceil(innerHeight-n.getBoundingClientRect().top)+'px')}}window.addEventListener('resize',fitAppViewport);window.addEventListener('orientationchange',fitAppViewport);document.addEventListener('DOMContentLoaded',fitAppViewport);function switchTab(t){fitAppViewport();document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('hide',s.id!==t));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));render();window.scrollTo(0,0)}document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{if(b.dataset.tab==='add'&&editing===null)clearForm();switchTab(b.dataset.tab)});function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}// Скриншоты хранятся отдельно от числовой истории в IndexedDB, чтобы не переполнять localStorage.
+const KEY='courier-pro-shifts-v1';let shifts=load(),editing=null,pendingPhoto=null;const photoDates=new Set();const $=id=>document.getElementById(id);const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n||0)+' ₽';const num=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(n||0);const isoLocal=d=>{let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};function load(){try{let a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch{return []}}function persist(){try{localStorage.setItem(KEY,JSON.stringify(shifts));return true}catch{alert('Не удалось сохранить данные. Проверьте свободное место в браузере.');return false}}function sum(a,k){return a.reduce((s,x)=>s+(Number(x[k])||0),0)}function dateText(d){return new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}function switchTab(t){document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('hide',s.id!==t));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));render();window.scrollTo(0,0)}document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{if(b.dataset.tab==='add'&&editing===null)clearForm();switchTab(b.dataset.tab)});function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}// Скриншоты хранятся отдельно от числовой истории в IndexedDB, чтобы не переполнять localStorage.
 const photoDB=new Promise((resolve,reject)=>{if(!window.indexedDB){reject(Error('IndexedDB недоступна'));return}let r=indexedDB.open('courier-pro-photos',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('photos'))r.result.createObjectStore('photos')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 async function photoOp(type,key,value){let db=await photoDB;return new Promise((resolve,reject)=>{let tx=db.transaction('photos',type==='get'?'readonly':'readwrite'),store=tx.objectStore('photos');let req=type==='get'?store.get(key):type==='put'?store.put(value,key):store.delete(key);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
 async function refreshPhotoDates(){try{let db=await photoDB;let keys=await new Promise((resolve,reject)=>{let r=db.transaction('photos','readonly').objectStore('photos').getAllKeys();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});photoDates.clear();keys.forEach(x=>photoDates.add(x));render()}catch(e){console.warn('Не удалось прочитать сохранённые скриншоты',e)}}

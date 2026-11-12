@@ -282,6 +282,43 @@ body:has(#home:not(.hide)) > .nav {
   overflow:visible!important;
   padding-bottom:16px!important;
 }
+
+/* Единый экран приложения: закреплённые шапка и меню, прокручивается только содержимое. */
+html{height:100%;overflow:hidden!important;overscroll-behavior:none!important}
+body,body:has(#home:not(.hide)){
+  position:relative!important;inset:auto!important;
+  display:flex!important;flex-direction:column!important;
+  width:100%!important;height:100vh!important;height:100dvh!important;
+  min-height:0!important;margin:0!important;padding:0!important;
+  overflow:hidden!important;overscroll-behavior:none!important;
+}
+body>header,body:has(#home:not(.hide))>header{
+  flex:0 0 auto!important;width:100%!important;
+}
+body>main,body:has(#home:not(.hide))>main{
+  position:relative!important;inset:auto!important;
+  display:block!important;flex:1 1 auto!important;
+  width:100%!important;min-height:0!important;height:auto!important;
+  max-height:none!important;overflow-x:hidden!important;
+  overflow-y:auto!important;-webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain!important;
+  padding-top:13px!important;padding-bottom:24px!important;
+  margin:0 auto!important;
+}
+body>.nav,body:has(#home:not(.hide))>.nav{
+  position:relative!important;inset:auto!important;bottom:auto!important;
+  flex:0 0 auto!important;width:100%!important;
+  margin:0!important;z-index:5!important;
+}
+#home.dashboard-home,#home:not(.hide){
+  height:auto!important;max-height:none!important;
+  width:100%!important;transform:none!important;
+  overflow:visible!important;justify-content:flex-start!important;
+  padding-bottom:16px!important;
+}
+/* Не даём старым правилам фиксировать страницу и масштабировать главную. */
+body.entry-locked>header,body.entry-locked>main,body.entry-locked>.nav{visibility:hidden!important}
+@supports(height:100svh){body,body:has(#home:not(.hide)){height:100dvh!important}}
 </style></head><body class="entry-locked"><div id="entryScreen" role="dialog" aria-modal="true" aria-label="Вход в Курьер PRO"><div class="entry-mark" aria-hidden="true">➤</div><div class="entry-name">КУРЬЕР <em>PRO</em></div><div class="entry-subtitle">ДОСТАВКА · СМЕНЫ · ДОХОД</div><button id="enterApp" type="button">Войти в приложение</button></div><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
@@ -296,7 +333,7 @@ body:has(#home:not(.hide)) > .nav {
 <section id="add" class="hide"><div class="section-title"><h2 id="formTitle">Новая смена</h2></div><div class="panel"><div id="editBanner"></div><label class="upload">📷<strong>Выбрать скриншот</strong><small>Фото из приложения доставки</small><input id="photo" type="file" accept="image/*"></label><img id="preview" alt="Предпросмотр скриншота"><p id="status">После выбора изображения попробуем распознать цифры. Все значения можно проверить и исправить вручную.</p><div class="field"><label>Дата рабочей смены</label><input id="date" type="date"></div><div class="field"><label>Количество заказов</label><input id="orders" type="number" min="0" step="1" inputmode="numeric"></div><div class="field"><label>Оплата за заказы, ₽</label><input id="orderPay" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Пройдено километров</label><input id="km" type="number" min="0" step="0.001" inputmode="decimal"></div><div class="field"><label>Оплата за путь, ₽</label><input id="pathPay" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Итого за смену, ₽</label><input id="total" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary" id="save">Сохранить смену</button><button class="secondary hide" id="cancelEdit" style="width:100%;margin-top:10px">Отменить редактирование</button></div></section>
 <section id="stats" class="hide"><div class="section-title"><h2>Аналитика</h2><div class="stats-filters"><select id="statsPeriod" aria-label="Период аналитики"><option value="week" selected>За неделю</option><option value="month">За месяц</option><option value="year">За год</option></select></div></div><div class="panel" id="statsContent"></div><div class="section-title"><h2>Заработок по сменам</h2></div><div class="panel" id="chart"></div></section>
 </main><div id="photoViewer" class="photo-viewer hide" role="dialog" aria-modal="true" aria-label="Скриншот смены"><button id="closePhoto" class="secondary">✕ Закрыть скриншот</button><img id="viewPhoto" alt="Скриншот смены"></div><nav class="nav"><button data-tab="home" class="active"><span>⌂</span>Главная</button><button data-tab="history"><span>▦</span>Смены</button><button data-tab="payouts"><span>▣</span>Выплаты</button><button data-tab="stats"><span>▥</span>Статистика</button></nav><script>
-const KEY='courier-pro-shifts-v1';let shifts=load(),editing=null,pendingPhoto=null;const photoDates=new Set();const $=id=>document.getElementById(id);const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n||0)+' ₽';const num=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(n||0);const isoLocal=d=>{let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};function load(){try{let a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch{return []}}function persist(){try{localStorage.setItem(KEY,JSON.stringify(shifts));return true}catch{alert('Не удалось сохранить данные. Проверьте свободное место в браузере.');return false}}function sum(a,k){return a.reduce((s,x)=>s+(Number(x[k])||0),0)}function dateText(d){return new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}function switchTab(t){document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('hide',s.id!==t));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));render();window.scrollTo(0,0)}document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{if(b.dataset.tab==='add'&&editing===null)clearForm();switchTab(b.dataset.tab)});function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}// Скриншоты хранятся отдельно от числовой истории в IndexedDB, чтобы не переполнять localStorage.
+const KEY='courier-pro-shifts-v1';let shifts=load(),editing=null,pendingPhoto=null;const photoDates=new Set();const $=id=>document.getElementById(id);const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n||0)+' ₽';const num=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(n||0);const isoLocal=d=>{let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};function load(){try{let a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch{return []}}function persist(){try{localStorage.setItem(KEY,JSON.stringify(shifts));return true}catch{alert('Не удалось сохранить данные. Проверьте свободное место в браузере.');return false}}function sum(a,k){return a.reduce((s,x)=>s+(Number(x[k])||0),0)}function dateText(d){return new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}function switchTab(t){document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('hide',s.id!==t));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));render();document.querySelector('main').scrollTop=0;window.scrollTo(0,0)}document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{if(b.dataset.tab==='add'&&editing===null)clearForm();switchTab(b.dataset.tab)});function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}// Скриншоты хранятся отдельно от числовой истории в IndexedDB, чтобы не переполнять localStorage.
 const photoDB=new Promise((resolve,reject)=>{if(!window.indexedDB){reject(Error('IndexedDB недоступна'));return}let r=indexedDB.open('courier-pro-photos',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('photos'))r.result.createObjectStore('photos')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 async function photoOp(type,key,value){let db=await photoDB;return new Promise((resolve,reject)=>{let tx=db.transaction('photos',type==='get'?'readonly':'readwrite'),store=tx.objectStore('photos');let req=type==='get'?store.get(key):type==='put'?store.put(value,key):store.delete(key);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
 async function refreshPhotoDates(){try{let db=await photoDB;let keys=await new Promise((resolve,reject)=>{let r=db.transaction('photos','readonly').objectStore('photos').getAllKeys();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});photoDates.clear();keys.forEach(x=>photoDates.add(x));render()}catch(e){console.warn('Не удалось прочитать сохранённые скриншоты',e)}}

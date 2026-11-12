@@ -357,6 +357,25 @@ body.entry-locked>header,body.entry-locked>main,body.entry-locked>.nav{visibilit
   padding:0!important;margin:0!important;border:0!important;opacity:0!important;
   z-index:1;cursor:pointer;-webkit-appearance:none;appearance:none;
 }
+
+/* Главная: неподвижная область между закреплёнными шапкой и меню. */
+body:has(#home:not(.hide)) > main {
+  overflow-y:hidden!important;
+  overscroll-behavior-y:none!important;
+  touch-action:pan-x!important;
+}
+#home:not(.hide) {
+  transform:scale(var(--home-static-scale, 1))!important;
+  transform-origin:top left!important;
+  width:calc(100% / var(--home-static-scale, 1))!important;
+  overflow:visible!important;
+  margin:0!important;
+}
+/* На других страницах прокрутка остаётся доступной. */
+body:not(:has(#home:not(.hide))) > main {
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+}
 </style></head><body class="entry-locked"><div id="entryScreen" role="dialog" aria-modal="true" aria-label="Вход в Курьер PRO"><div class="entry-mark" aria-hidden="true">➤</div><div class="entry-name">КУРЬЕР <em>PRO</em></div><div class="entry-subtitle">ДОСТАВКА · СМЕНЫ · ДОХОД</div><button id="enterApp" type="button">Войти в приложение</button></div><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
@@ -479,4 +498,32 @@ clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkAct
     requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
   });
 })();
-</script></body></html>
+</script>
+<script>
+/* Вписываем главную целиком в видимую область без вертикального скролла. */
+(function(){
+  const home=document.getElementById('home');
+  const main=document.querySelector('body > main');
+  if(!home||!main)return;
+  let scheduled=false;
+  function fitHome(){
+    scheduled=false;
+    if(home.classList.contains('hide'))return;
+    home.style.setProperty('--home-static-scale','1');
+    const available=main.clientHeight-parseFloat(getComputedStyle(main).paddingTop||0)-parseFloat(getComputedStyle(main).paddingBottom||0);
+    const required=home.scrollHeight;
+    if(available>0&&required>available){
+      const scale=Math.min(1,Math.max(.4,(available-2)/required));
+      home.style.setProperty('--home-static-scale',String(scale));
+    }
+  }
+  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(fitHome)}
+  new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',schedule);
+  window.addEventListener('orientationchange',schedule);
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
+  document.getElementById('enterApp')?.addEventListener('click',()=>{schedule();requestAnimationFrame(schedule)});
+  schedule();
+})();
+</script>
+</body></html>

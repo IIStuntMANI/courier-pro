@@ -187,27 +187,43 @@ main > section::-webkit-scrollbar, .panel::-webkit-scrollbar,
 .backup-button span{min-width:0}.backup-button small{display:block;margin-top:3px;color:#bba79a;font-size:10px;font-weight:650}
 @media(max-width:360px){.backup-actions{gap:7px}.backup-actions .backup-button{gap:6px;padding:9px 5px;font-size:12px}.backup-icon{width:21px;height:21px;min-width:21px}}
 
-/* Универсальная адаптация PWA: iOS, Android, браузер и установленное приложение. */
-html { min-height:100%; width:100%; overflow-x:hidden; }
-body { min-height:100vh; min-height:100dvh; width:100%; overflow-x:hidden; }
-.nav { bottom:0; width:100%; }
+/* Стабильная компоновка PWA при холодном запуске на iOS и Android.
+   Одна система координат для шапки, контента и нижней навигации. */
+html { width:100%; min-height:100%; overflow-x:hidden; }
+body { width:100%; min-height:100dvh; overflow-x:hidden; }
 body:has(#home:not(.hide)) {
-  height:var(--app-viewport-height, 100dvh)!important;
+  position:fixed!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  height:100dvh!important;
   min-height:0!important;
+  padding:0!important;
+  margin:0!important;
   overflow:hidden!important;
   overscroll-behavior:none;
-  padding-bottom:0!important;
+  display:flex;
+  flex-direction:column;
 }
-body:has(#home:not(.hide)) main {
-  position:fixed!important;
-  top:var(--home-top, 78px)!important;
-  bottom:var(--home-bottom, 75px)!important;
-  left:0!important;
-  right:0!important;
+body:has(#home:not(.hide)) > header { flex:none; width:100%; }
+body:has(#home:not(.hide)) > main {
+  position:relative!important;
+  inset:auto!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
   height:auto!important;
   overflow:hidden!important;
   padding-bottom:0!important;
   margin:0 auto!important;
+  width:100%;
+}
+body:has(#home:not(.hide)) > .nav {
+  position:relative!important;
+  bottom:auto!important;
+  left:auto!important;
+  right:auto!important;
+  flex:none!important;
+  width:100%!important;
 }
 #home:not(.hide) {
   height:auto!important;
@@ -215,14 +231,22 @@ body:has(#home:not(.hide)) main {
   padding-bottom:0!important;
   justify-content:flex-start!important;
   transform-origin:top left;
-  transform:scale(var(--home-scale, 1));
-  width:calc(100% / var(--home-scale, 1));
+  transform:scale(var(--home-scale,1));
+  width:calc(100% / var(--home-scale,1));
   overflow:visible;
 }
-@media (orientation:landscape) and (max-height:500px) {
-  body:has(#home:not(.hide)) main { overflow:hidden!important; }
-}
-</style></head><body><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
+
+/* Экран входа: приложение показывается только после нажатия. */
+body.entry-locked > header,body.entry-locked > main,body.entry-locked > .nav{visibility:hidden!important}
+#entryScreen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;padding:24px;background:radial-gradient(ellipse at 50% 25%,#342018 0%,#141214 48%,#08090c 100%);color:#fff;text-align:center}
+#entryScreen[hidden]{display:none!important}
+.entry-mark{width:86px;height:86px;border-radius:25px;display:grid;place-items:center;background:linear-gradient(145deg,#ffb000,#f15b00);font-size:54px;color:#1c1007;box-shadow:0 10px 38px #ff6a003c}
+.entry-name{font-size:clamp(27px,8vw,39px);font-weight:950;font-style:italic;letter-spacing:-1.5px}
+.entry-name em{color:#ff9700;font-style:italic}
+.entry-subtitle{font-size:11px;letter-spacing:2px;color:#b4a8a4;margin-top:-13px}
+#enterApp{width:min(100%,340px);height:60px;border-radius:17px;border:1px solid #ffc05c;background:linear-gradient(180deg,#ffb000,#ff7800 60%,#e95a00);color:white;font-size:20px;font-weight:850;box-shadow:0 8px 28px #ff6a0036;cursor:pointer;touch-action:manipulation}
+#enterApp:active{filter:brightness(.9)}
+</style></head><body class="entry-locked"><div id="entryScreen" role="dialog" aria-modal="true" aria-label="Вход в Курьер PRO"><div class="entry-mark" aria-hidden="true">➤</div><div class="entry-name">КУРЬЕР <em>PRO</em></div><div class="entry-subtitle">ДОСТАВКА · СМЕНЫ · ДОХОД</div><button id="enterApp" type="button">Войти в приложение</button></div><header><div class="brand-mark" aria-hidden="true">➤</div><div class="brand"><h1>КУРЬЕР <em>PRO</em></h1><p>ДОСТАВКА · СМЕНЫ · ДОХОД</p></div></header><main>
 <section id="home" class="dashboard-home">
 <div class="period-card period-month"><div class="period-heading"><span>◈ &nbsp; ТЕКУЩИЙ МЕСЯЦ</span><span id="monthPeriodLabel"></span></div><div class="period-money" id="monthMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="monthDays">0</b></div><div><span>Заказов</span><b id="monthOrders">0</b></div><div><span>Километров</span><b id="monthKm">0</b></div></div></div>
 <div class="period-card period-week"><div class="period-heading"><span>◷ &nbsp; ТЕКУЩАЯ НЕДЕЛЯ</span><span id="weekPeriodLabel"></span></div><div class="period-money" id="weekMoney">0 ₽</div><div class="period-metrics"><div><span>Смен</span><b id="weekDays">0</b></div><div><span>Заказов</span><b id="weekOrders">0</b></div><div><span>Километров</span><b id="weekKm">0</b></div></div></div>
@@ -330,43 +354,20 @@ $('homeAdd').onclick=()=>{clearForm();switchTab('add')};
 clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkActReminder,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkActReminder()});if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 <script>
-/* Адаптивная компоновка главной под любой размер экрана. */
+/* Подгоняем только содержимое. Размер экрана и положение меню
+   определяются CSS, без конфликтующих JS-измерений viewport. */
 (function(){
   const home=document.getElementById('home');
-  const header=document.querySelector('body > header');
-  const nav=document.querySelector('nav.nav');
+  const main=document.querySelector('body > main');
   let pending=false;
-  let lastHeight=0;
-  function viewportHeight(){
-    // visualViewport учитывает динамические панели мобильных браузеров.
-    // При открытой клавиатуре не уменьшаем высоту главной страницы.
-    const visual=window.visualViewport;
-    const inner=window.innerHeight;
-    if(!visual)return inner;
-    const keyboardOpen=document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
-    return keyboardOpen?inner:Math.min(inner,Math.round(visual.height+visual.offsetTop));
-  }
   function fitHome(){
     pending=false;
-    const viewport=Math.max(1,viewportHeight());
-    lastHeight=viewport;
-    document.documentElement.style.setProperty('--app-viewport-height',viewport+'px');
     if(home.classList.contains('hide'))return;
-    const top=Math.max(0,Math.ceil(header.getBoundingClientRect().bottom)+5);
-    const bottom=Math.max(0,Math.ceil(nav.getBoundingClientRect().height)+5);
-    document.body.style.setProperty('--home-top',top+'px');
-    document.body.style.setProperty('--home-bottom',bottom+'px');
-    const available=Math.max(1,viewport-top-bottom);
-    // Высота зависит от ширины текста; рассчитываем повторно при масштабировании.
-    let scale=1;
-    for(let i=0;i<5;i++){
-      home.style.setProperty('--home-scale',String(scale));
-      const natural=Math.max(home.scrollHeight,home.getBoundingClientRect().height/scale);
-      const next=Math.min(1,available/Math.max(1,natural));
-      if(Math.abs(next-scale)<0.001){scale=next;break}
-      scale=next;
-    }
-    home.style.setProperty('--home-scale',String(Math.max(0.1,scale*0.995)));
+    home.style.setProperty('--home-scale','1');
+    const available=Math.max(1,main.clientHeight);
+    const natural=Math.max(1,home.scrollHeight);
+    const scale=Math.min(1,available/natural);
+    home.style.setProperty('--home-scale',String(Math.max(.1,scale*.995)));
     if(window.scrollY)window.scrollTo(0,0);
   }
   function schedule(){if(!pending){pending=true;requestAnimationFrame(fitHome)}}
@@ -374,19 +375,26 @@ clearForm();render();refreshPhotoDates();checkActReminder();setInterval(checkAct
   new MutationObserver(schedule).observe(home,{childList:true,subtree:true,characterData:true});
   if(window.ResizeObserver){
     const observer=new ResizeObserver(schedule);
-    observer.observe(header);observer.observe(nav);
+    observer.observe(main);
   }
   window.addEventListener('resize',schedule);
   window.addEventListener('orientationchange',schedule);
   window.addEventListener('pageshow',schedule);
-  window.addEventListener('focus',schedule);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize',schedule);
-    window.visualViewport.addEventListener('scroll',schedule);
-  }
-  [80,250,600,1200,2200].forEach(delay=>setTimeout(schedule,delay));
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',schedule);
+  [100,400,1000].forEach(delay=>setTimeout(schedule,delay));
   schedule();
 })();
 </script>
-</body></html>
+<script>
+(function(){
+  const button=document.getElementById('enterApp');
+  button.addEventListener('click',function(){
+    document.body.classList.remove('entry-locked');
+    document.getElementById('entryScreen').hidden=true;
+    window.scrollTo(0,0);
+    window.dispatchEvent(new Event('resize'));
+    requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+  });
+})();
+</script></body></html>
